@@ -1,96 +1,164 @@
 from rest_framework.serializers import ModelSerializer
-from rest_framework import serializers
-from baseconfig.serializers import BaseConfigItemSerializer, BaseConfigValueSerializer
 from . import models
 
 
-class TemplateBaseSerializer(ModelSerializer):
-    fields_info = BaseConfigItemSerializer(
-        many=True, source='fields', read_only=True
-    )
-    display_fields_info = BaseConfigItemSerializer(
-        many=True, source='display_fields', read_only=True
-    )
-    filter_fields_info = BaseConfigItemSerializer(
-        many=True, source='filter_fields', read_only=True
-    )
+class DataDefineSerializer(ModelSerializer):
+
+    class Meta:
+        model = models.DataDefine
+        fields = (
+            'pk',
+            'sys_id',
+            'org_id',
+            'biz_id',
+            'name',
+            'source',
+            'define',
+        )
+
+
+class FormFieldsSerializer(ModelSerializer):
+
+    class Meta:
+        model = models.FormFields
+        fields = (
+            'pk',
+            'sys_id',
+            'org_id',
+            'biz_id',
+            'template',
+            'col_title',
+            'col_name',
+            'widget',
+            'widget_attr',
+            'verify_exp',
+            'data_source',
+            'sort_num',
+            'width',
+        )
+
+
+class FormTemplateSerializer(ModelSerializer):
 
     class Meta:
         model = models.FormTemplate
         fields = (
             'pk',
-            'baseconfig_category_prefix',
-            'fields',
-            'fields_info',
-            'display_fields',
-            'display_fields_info',
-            'filter_fields',
-            'filter_fields_info',
+            'sys_id',
+            'org_id',
+            'biz_id',
             'create_time',
-            'create_time_display',
-            'create_user',
-            'create_user_display',
             'title',
+            'form_type',
             'sort_num',
+            'remark',
         )
 
 
-class TemplateDataBaseSerializer(ModelSerializer):
-    input_values = serializers.JSONField(write_only=True)
-    values = BaseConfigValueSerializer(many=True, read_only=True)
-    values_dict = serializers.SerializerMethodField(help_text='表单值，按BaseConfigItem的pk为key，BaseConfigValue为value')
-    values_name_dict = serializers.SerializerMethodField(help_text='表单值，按BaseConfigItem的name为key，BaseConfigValue为value')
+class FormDataSerializer(ModelSerializer):
 
     class Meta:
-        model = models.FormTemplateData
+        model = models.FormData
         fields = (
             'pk',
-            'create_user',
-            'create_user_display',
-            'create_time',
-            'create_time_display',
-            'input_values',
-            'values',
-            'values_dict',
-            'values_name_dict',
+            'sys_id',
+            'org_id',
+            'biz_id',
+            'user',
+            'department',
+            'template',
+            'field_01',
+            'field_02',
+            'field_03',
+            'field_04',
+            'field_05',
+            'field_06',
+            'field_07',
+            'field_08',
+            'field_09',
+            'field_10',
+            'field_11',
+            'field_12',
+            'field_13',
+            'field_14',
+            'field_15',
+            'field_16',
+            'field_17',
+            'field_18',
+            'field_19',
+            'field_20',
+            'field_21',
+            'field_22',
+            'field_23',
+            'field_24',
+            'field_25',
+            'field_26',
+            'field_27',
+            'field_28',
+            'field_29',
+            'field_30',
+            'date_01',
+            'date_02',
+            'date_03',
+            'date_04',
+            'date_05',
+            'date_06',
+            'date_07',
+            'date_08',
+            'date_09',
+            'date_10',
+            'datetime_01',
+            'datetime_02',
+            'datetime_03',
+            'datetime_04',
+            'datetime_05',
+            'datetime_06',
+            'datetime_07',
+            'datetime_08',
+            'datetime_09',
+            'datetime_10',
+            'int_01',
+            'int_02',
+            'int_03',
+            'int_04',
+            'int_05',
+            'int_06',
+            'int_07',
+            'int_08',
+            'int_09',
+            'int_10',
+            'float_01',
+            'float_02',
+            'float_03',
+            'float_04',
+            'float_05',
+            'float_06',
+            'float_07',
+            'float_08',
+            'float_09',
+            'float_10',
+            'text_01',
+            'text_02',
+            'text_03',
+            'text_04',
+            'text_05',
         )
 
-    def create(self, validated_data):
-        input_values = validated_data.pop('input_values')
-        instance = self.Meta.model.objects.create(**validated_data)
-        for k, v in input_values.items():
-            value_serializer = BaseConfigValueSerializer(data={'item': k, 'value': v})
-            if value_serializer.is_valid():
-                instance.values.add(value_serializer.save())
-        return instance
 
-    def update(self, instance, validated_data):
-        if 'input_values' in validated_data:
-            input_values = validated_data.pop('input_values')
-        else:
-            input_values = {}
-        instance = super().update(instance, validated_data)
-        for k, v in input_values.items():
-            values = instance.values.filter(item_id=k)
-            if values:
-                value = values[0]
-                value_serializer = BaseConfigValueSerializer(data={'item': k, 'value': v}, instance=value)
-                if value_serializer.is_valid():
-                    value_serializer.save()
-            else:
-                value_serializer = BaseConfigValueSerializer(data={'item': k, 'value': v})
-                if value_serializer.is_valid():
-                    instance.values.add(value_serializer.save())
-        return instance
+class FormDataReportConfSerializer(ModelSerializer):
 
-    def get_values_dict(self, obj):
-        return {
-            i.item.pk: BaseConfigValueSerializer(i).data
-            for i in obj.values.all()
-        }
-
-    def get_values_name_dict(self, obj):
-        return {
-            i.item.name: i.value_display
-            for i in obj.values.all()
-        }
+    class Meta:
+        model = models.FormDataReportConf
+        fields = (
+            'pk',
+            'sys_id',
+            'org_id',
+            'biz_id',
+            'report_id',
+            'report_name',
+            'report_remark',
+            'form_template',
+            'arguments',
+            'data_struct',
+            'charts_struct',
+        )
