@@ -1,4 +1,4 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from . import models
 
 
@@ -39,6 +39,7 @@ class FormFieldsSerializer(ModelSerializer):
 
 
 class FormTemplateSerializer(ModelSerializer):
+    field = SerializerMethodField()
 
     class Meta:
         model = models.FormTemplate
@@ -52,7 +53,11 @@ class FormTemplateSerializer(ModelSerializer):
             'form_type',
             'sort_num',
             'remark',
+            'field',
         )
+
+    def get_field(self, obj):
+        return FormFieldsSerializer(obj.fields.order_by('sort_num'), many=True).data
 
 
 class FormDataSerializer(ModelSerializer):
