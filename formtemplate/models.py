@@ -20,6 +20,10 @@ class DataDefine(models.Model):
     source = models.IntegerField('数据来源', choices=SOURCE, default=1)
     define = models.TextField('数据定义')
 
+    class Meta:
+        verbose_name = '数据定义'
+        verbose_name_plural = verbose_name
+
 
 # 模版字段
 class FormFields(models.Model):
@@ -38,6 +42,10 @@ class FormFields(models.Model):
     data_source = models.ForeignKey('DataDefine', on_delete=models.SET_NULL, null=True, blank=True, related_name='+')
     sort_num = models.PositiveIntegerField('序号', default=1, help_text='序号')
     width = models.IntegerField('宽度', default=0, help_text='宽度')
+
+    class Meta:
+        verbose_name = '模板字段'
+        verbose_name_plural = verbose_name
 
 
 # 模板
@@ -165,7 +173,7 @@ class FormData(models.Model):
     text_05 = models.TextField('Text_05', null=True, blank=True)
 
     class Meta:
-        verbose_name = 'Form数据表'
+        verbose_name = '表单数据表'
         verbose_name_plural = verbose_name
 
 
@@ -185,5 +193,5 @@ class FormDataReportConf(models.Model):
     charts_struct = models.TextField('图表定义', null=True, blank=True, help_text='图表定义')
 
     class Meta:
-        verbose_name = '数据报表'
+        verbose_name = '表单数据报表'
         verbose_name_plural = verbose_name
